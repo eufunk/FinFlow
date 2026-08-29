@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: finflow-postgres
+    environment:
+      POSTGRES_DB: finflow
+      POSTGRES_USER: finflow
+      POSTGRES_PASSWORD: finflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - finflow-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finflow -d finflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  finflow-postgres-data:
+
+# Hinweis: backend- und frontend-Container werden in Phase 12 (Docker) ergänzt,
+# sobald die jeweiligen Dockerfiles existieren. Bis dahin laufen Backend
+# (./backend, mvnw spring-boot:run) und Frontend (./frontend, npm run dev)
+# lokal gegen diese Postgres-Instanz.
