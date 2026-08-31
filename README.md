@@ -9,7 +9,7 @@ FinFlow/
 ├── backend/            Spring Boot 4 / Java 21 – REST API (modularer Monolith)
 ├── frontend/           Next.js / React / TypeScript – Web-Frontend
 ├── docker-compose.yml  Lokale Entwicklungsumgebung (PostgreSQL)
-└── Dock/
+└── Docs/
     ├── Prompt/          Sammlung der KI-Prompts, die dieses Projekt planen
     └── Word/            Ergebnisdokumente je Entwicklungsphase (Requirements, Architektur, ...)
 ```
@@ -35,4 +35,4 @@ Health-Check des Backends: `GET http://localhost:8080/actuator/health`
 
 ## Status
 
-Aktueller Stand: technisches Grundgerüst (Backend-Modulstruktur, Frontend-Feature-Struktur, lokale Postgres-Umgebung). Fachliche Umsetzung folgt phasenweise gemäß `Dock/Word/FinFlow_Projektplanung_Umsetzung.docx`.
+Aktueller Stand: technisches Grundgerüst (Backend-Modulstruktur, Frontend-Feature-Struktur, lokale Postgres-Umgebung). Fachliche Umsetzung folgt phasenweise gemäß `Docs/Word/FinFlow_Projektplanung_Umsetzung.docx`.
