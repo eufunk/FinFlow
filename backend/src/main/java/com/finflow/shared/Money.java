@@ -49,6 +49,10 @@ public final class Money {
         return amount.signum() < 0;
     }
 
+    public boolean isPositive() {
+        return amount.signum() > 0;
+    }
+
     public Money add(Money other) {
         return new Money(this.amount.add(other.amount));
     }
