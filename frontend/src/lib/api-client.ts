@@ -11,15 +11,29 @@ export class ApiError extends Error {
   }
 }
 
-type RequestOptions = Omit<RequestInit, "body"> & { body?: unknown };
+type RequestOptions = Omit<RequestInit, "body"> & { body?: unknown; skipUserHeader?: boolean };
+
+// TEMPORÄR bis Phase 9 (Security/JWT): der Header ersetzt einen echten Auth-Token, siehe
+// backend com.finflow.identity.infrastructure.HeaderBasedCurrentUserProvider und
+// src/lib/current-user.ts, wo diese ID einmalig beim App-Start aufgelöst wird.
+let currentUserId: string | null = null;
+
+export function setCurrentUserId(userId: string): void {
+  currentUserId = userId;
+}
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string> | undefined),
+  };
+  if (!options.skipUserHeader && currentUserId) {
+    headers["X-User-Id"] = currentUserId;
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
+    headers,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 

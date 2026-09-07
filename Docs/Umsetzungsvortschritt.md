@@ -1,6 +1,6 @@
 # FinFlow – Umsetzungsvortschritt
 
-Stand: 2026-09-07 (Phase 7 abgeschlossen, noch nicht committet)
+Stand: 2026-09-07 (Phase 8 - Dashboard - abgeschlossen, noch nicht committet)
 
 Lebendes Dokument – wird nach jeder abgeschlossenen Phase aktualisiert. Ausführliche fachliche
 Ergebnisse (Requirements, Architektur, Domain Model) stehen in
@@ -42,9 +42,10 @@ MockMvc-Tests:
 | Financial Goals | `GET`/`POST /api/v1/goals` | `GoalProjectionCalculator` (Zielerreichungsdatum, 100-Jahre-Obergrenze) |
 | Financial Health Engine | `GET /api/v1/financial-health` | 5 Kategorien à 20 Punkte, deterministisch, keine Blackbox |
 
-Zusätzlich minimal (nur lesend, ohne eigene CRUD-Endpoints, da nicht Teil der Phase-5-Schritte):
+Zusätzlich minimal (nur lesend, ohne eigene Anlege-Endpoints, da nicht Teil der Phase-5-Schritte):
 - `identity` – `User`, `CurrentUserProvider` (befristeter Header-Platzhalter bis Phase 9/Security)
-- `Account` (financialprofile) – für Net Worth/Diversifikation
+- `Account` (financialprofile) – für Net Worth/Diversifikation, seit Phase 8 zusätzlich mit
+  `GET /api/v1/accounts` (fürs Dashboard, weiterhin kein POST)
 - `InsurancePolicy` (insurance) – für die Coverage-Kategorie
 
 **Phase 7 – Scenario Engine – vollständig umgesetzt** (`scenario`-Modul):
@@ -82,16 +83,43 @@ ausschließlich am fehlenden Docker-Daemon liegt, nicht am Code.
 - `GlobalExceptionHandler` hatte keinen Handler für kaputte JSON-Bodies (fiel fälschlich auf 500
   statt 400 zurück)
 
+### Backend: Dev-Seed (Ersatz für Login bis Phase 9)
+
+Da es noch keinen Registrierungs-/Login-Endpoint gibt, legt `DevDataSeeder` (nur unter
+Spring-Profil `dev`, idempotent) beim Start einen festen Demo-User mit realistischen Beispieldaten
+an: Financial Profile, 3 Accounts, 2 von 3 Kernrisiken versichert (bewusst nicht alle, für einen
+realistischeren Demo-Score), ~18 Transaktionen über 3 Monate, ein Sparziel, zwei Szenarien.
+`GET /api/v1/dev/demo-user` (ebenfalls nur unter `dev`) liefert dem Frontend dessen ID.
+
 ### Frontend (`frontend/`)
 
-Next.js 16 / React 19 / TypeScript-Grundgerüst, TanStack Query + React Hook Form + Zod
-installiert und verdrahtet (Provider, typisierter API-Client), Feature-Ordnerstruktur für alle
-9 geplanten Bereiche angelegt. **Noch keine echten Seiten/Komponenten gebaut.**
+Next.js 16 / React 19 / TypeScript, TanStack Query + React Hook Form + Zod. **Phase 8 (erste
+Seiten) begonnen:**
+
+- Tailwind CSS ergänzt (in der Grundgerüst-Phase bewusst ausgelassen, jetzt für den geforderten
+  "professionellen SaaS-Look" nachgeholt) mit einem kleinen Fintech-Farbsystem.
+- Temporärer Auth-Ersatz (`src/lib/current-user.ts`): löst beim App-Start einmalig die
+  Demo-User-ID über `/api/v1/dev/demo-user` auf und hängt sie als `X-User-Id`-Header an jeden
+  Request – spiegelt den `CurrentUserProvider`-Platzhalter im Backend, wird in Phase 9 zusammen
+  mit diesem ersetzt.
+- Wiederverwendbare UI-Bausteine (`src/components/ui/`): Card, MetricCard, Badge, ProgressBar,
+  Alert, EmptyState, LoadingState, ErrorState, eine handgeschriebene SVG-LineChart (keine
+  Chart-Bibliothek für eine einzelne Linie).
+- Navigation + App-Layout für alle 9 Seiten; **Dashboard vollständig fertig** (Financial Health
+  Score mit Kategorie-Aufschlüsselung, Net Worth, Einkommen/Ausgaben/Sparquote, Empfehlungen,
+  Sparziele-Zusammenfassung, projizierte Vermögensentwicklung aus dem ersten Szenario).
+- Die übrigen 7 Seiten (Transactions, Goals, Scenarios, Insurance, Reports, Settings, Admin) sind
+  bewusst transparente „Coming soon“-Platzhalter statt 404 – jeweils mit Hinweis, was am Backend
+  schon existiert.
+- `npm run build` und `npm run lint` laufen fehlerfrei; Dev-Server manuell gegen alle Routen
+  geprüft (kein Backend/DB in dieser Umgebung verfügbar, daher keine echten Daten sichtbar –
+  Lade-/Fehlerzustand wurde stattdessen verifiziert).
 
 ### Bewusst offene Lücken (keine vergessenen Baustellen, sondern dokumentierte Scoping-Entscheidungen)
 
-- Insurance/Account haben noch keine REST-Endpoints zum Anlegen → die beiden zugehörigen
-  Health-Score-Kategorien liefern für echte Nutzer aktuell 0 Punkte.
+- Insurance/Account haben weiterhin keine REST-Endpoints zum Anlegen (nur Dev-Seed bzw. interner
+  Lesezugriff) → ohne den Dev-Seed liefern die beiden zugehörigen Health-Score-Kategorien für
+  echte Nutzer 0 Punkte.
 - Kein Docker auf dieser Entwicklungsmaschine → Testcontainers-Integrationstests nie live
   gelaufen (nur Kompilierung + Fehleranalyse verifiziert).
 - Security/JWT (Phase 9) noch nicht gebaut → `CurrentUserProvider` ist ein befristeter
@@ -112,7 +140,7 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 | 5 | Spring Boot Backend | ✅ erledigt |
 | 6 | Financial Health Engine | ✅ erledigt (im Rahmen von Phase 5, Schritt 9) |
 | 7 | Scenario Engine | ✅ erledigt |
-| **8** | **Next.js Frontend (echte Seiten/Komponenten)** | **offen – nächster Schritt** |
+| **8** | **Next.js Frontend (echte Seiten/Komponenten)** | **🟡 teilweise – Dashboard fertig, restliche Seiten offen** |
 | 9 | Security (JWT, Rollen, Ownership-Checks) | offen |
 | 10 | JSON + XML Integration (inkl. Legacy-Adapter) | offen |
 | 11 | Testing-Strategie (Playwright/E2E, Coverage-Konzept) | offen |
@@ -132,5 +160,5 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 - OpenAPI/Swagger-Dokumentation der bisherigen Endpoints (Teil von Phase 5 laut Prompt, bisher
   ausgelassen).
 
-**Empfehlung:** weiter mit **Phase 8 – Next.js Frontend** (erste echte Seiten: Login-Platzhalter,
-Dashboard, Transactions).
+**Empfehlung:** weiter mit **Phase 8 – Transactions-Seite** (nächste Frontend-Slice: Liste +
+Formular zum Erfassen, API bereits vollständig vorhanden).
