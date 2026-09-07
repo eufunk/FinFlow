@@ -2,6 +2,8 @@
 
 Eine Webplattform, die einem Nutzer hilft, seine finanzielle Situation zu analysieren und konkrete Handlungsmöglichkeiten zu erkennen.
 
+**Neu hier?** → [`Docs/Einsteiger-Guide.md`](Docs/Einsteiger-Guide.md) erklärt ohne Vorkenntnisse, was FinFlow ist, wofür es gebaut wurde und wie es aufgebaut ist.
+
 ## Projektstruktur
 
 ```
@@ -10,8 +12,10 @@ FinFlow/
 ├── frontend/           Next.js / React / TypeScript – Web-Frontend
 ├── docker-compose.yml  Lokale Entwicklungsumgebung (PostgreSQL)
 └── Docs/
-    ├── Prompt/          Sammlung der KI-Prompts, die dieses Projekt planen
-    └── Word/            Ergebnisdokumente je Entwicklungsphase (Requirements, Architektur, ...)
+    ├── Einsteiger-Guide.md      Projekt-Einstieg ohne Vorkenntnisse
+    ├── Umsetzungsvortschritt.md Aktueller Stand: erledigt / offen
+    ├── Prompt/                  Sammlung der KI-Prompts, die dieses Projekt planen
+    └── Word/                    Ergebnisdokumente je Entwicklungsphase (Requirements, Architektur, ...)
 ```
 
 ## Lokale Entwicklung
