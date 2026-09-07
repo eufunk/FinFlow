@@ -1,6 +1,6 @@
 # FinFlow – Umsetzungsvortschritt
 
-Stand: 2026-09-07 (letzter Commit: `be626d9`)
+Stand: 2026-09-07 (Phase 7 abgeschlossen, noch nicht committet)
 
 Lebendes Dokument – wird nach jeder abgeschlossenen Phase aktualisiert. Ausführliche fachliche
 Ergebnisse (Requirements, Architektur, Domain Model) stehen in
@@ -28,7 +28,7 @@ Vorgabe „Spring Boot 3.x“: der offizielle Initializr bietet 3.x nicht mehr a
 Nutzer abgestimmt, bewusst auf 4.0.8 gegangen.
 
 **Grundgerüst:** alle 10 Module als Package-Skeleton (`api`/`application`/`domain`/
-`infrastructure`), `application.yml`, 11 Flyway-Migrationen (V1–V11), Testcontainers
+`infrastructure`), `application.yml`, 12 Flyway-Migrationen (V1–V12), Testcontainers
 vorkonfiguriert.
 
 **Phase 5 – vollständig umgesetzt**, vier vertikale Slices, jede mit Entity + Invarianten,
@@ -47,10 +47,30 @@ Zusätzlich minimal (nur lesend, ohne eigene CRUD-Endpoints, da nicht Teil der P
 - `Account` (financialprofile) – für Net Worth/Diversifikation
 - `InsurancePolicy` (insurance) – für die Coverage-Kategorie
 
-**Tests:** 101/101 lauffähige Tests grün (reine Unit-Tests + `@WebMvcTest`-Slices). Mehrere
-Testcontainers-Integrationstests kompilieren, laufen auf dieser Maschine mangels Docker nicht –
-in jedem Fall verifiziert, dass der Fehler ausschließlich am fehlenden Docker-Daemon liegt, nicht
-am Code.
+**Phase 7 – Scenario Engine – vollständig umgesetzt** (`scenario`-Modul):
+
+| Endpoint | Zweck |
+|---|---|
+| `POST /api/v1/scenarios` | Szenario anlegen |
+| `GET /api/v1/scenarios` | Szenarien auflisten (nur Parameter, keine Berechnung) |
+| `GET /api/v1/scenarios/{id}/result` | Ein Szenario berechnen |
+| `GET /api/v1/scenarios/compare?ids=…` | Mehrere Szenarien vergleichen |
+
+Kern ist `ScenarioProjectionCalculator` – reine, deterministische Monat-für-Monat-Simulation
+(`capital(n) = capital(n-1) * (1 + monthlyReturn) + Beitrag`), liefert `projectedCapital`,
+`yearlyDevelopment`, `totalContributions`, `investmentGrowth`, `inflationAdjustedValue` sowie
+optional `goalReached`/`goalReachedDate`. Zwei bewusste Annahmen zu Lücken in Prompt 7 (dort
+gefordert, aber nicht in den Eingaben spezifiziert): ein optionales `targetCapital`-Feld wurde
+ergänzt, damit `goalReached` überhaupt einen Bezugspunkt hat; `monthlyIncome`/`incomeGrowth`/
+`expensesGrowth` wurden als optionale Felder an das bestehende Scenario-Schema aus Phase 4
+angehängt (Migration V12) statt es neu zu entwerfen.
+
+**Tests:** 132/132 lauffähige Tests grün (reine Unit-Tests + `@WebMvcTest`-Slices), davon 13 allein
+für den Scenario-Calculator inkl. aller in Prompt 7 geforderten Fälle (0 % Rendite, negative
+Rendite, 0 € Sparrate, negative Werte, 100 Jahre Laufzeit, Inflation inkl. Extremfall -100 %,
+nicht-terminierende Dezimalbrüche). Mehrere Testcontainers-Integrationstests kompilieren, laufen
+auf dieser Maschine mangels Docker nicht – in jedem Fall verifiziert, dass der Fehler
+ausschließlich am fehlenden Docker-Daemon liegt, nicht am Code.
 
 **Beim Verifizieren gefundene und behobene echte Bugs:**
 - `pom.xml`: `4.0.8.RELEASE` → `4.0.8` (Spring Boot 4 kennt kein `.RELEASE`-Suffix mehr)
@@ -91,8 +111,8 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 | 4 | Domain + Database | ✅ erledigt |
 | 5 | Spring Boot Backend | ✅ erledigt |
 | 6 | Financial Health Engine | ✅ erledigt (im Rahmen von Phase 5, Schritt 9) |
-| **7** | **Scenario Engine** | **offen – nächster Schritt** |
-| 8 | Next.js Frontend (echte Seiten/Komponenten) | offen |
+| 7 | Scenario Engine | ✅ erledigt |
+| **8** | **Next.js Frontend (echte Seiten/Komponenten)** | **offen – nächster Schritt** |
 | 9 | Security (JWT, Rollen, Ownership-Checks) | offen |
 | 10 | JSON + XML Integration (inkl. Legacy-Adapter) | offen |
 | 11 | Testing-Strategie (Playwright/E2E, Coverage-Konzept) | offen |
@@ -112,4 +132,5 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 - OpenAPI/Swagger-Dokumentation der bisherigen Endpoints (Teil von Phase 5 laut Prompt, bisher
   ausgelassen).
 
-**Empfehlung:** weiter mit **Phase 7 – Scenario Engine**.
+**Empfehlung:** weiter mit **Phase 8 – Next.js Frontend** (erste echte Seiten: Login-Platzhalter,
+Dashboard, Transactions).
