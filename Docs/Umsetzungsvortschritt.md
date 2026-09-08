@@ -108,9 +108,15 @@ Seiten) begonnen:**
 - Navigation + App-Layout für alle 9 Seiten; **Dashboard vollständig fertig** (Financial Health
   Score mit Kategorie-Aufschlüsselung, Net Worth, Einkommen/Ausgaben/Sparquote, Empfehlungen,
   Sparziele-Zusammenfassung, projizierte Vermögensentwicklung aus dem ersten Szenario).
-- Die übrigen 7 Seiten (Transactions, Goals, Scenarios, Insurance, Reports, Settings, Admin) sind
-  bewusst transparente „Coming soon“-Platzhalter statt 404 – jeweils mit Hinweis, was am Backend
-  schon existiert.
+- **Transactions-Seite vollständig fertig**: Liste (sortiert, Kategorie-Namen aufgelöst, farblich
+  nach Einnahme/Ausgabe) über eine neue `DataTable`-Komponente, „+ Neue Transaktion“ öffnet ein
+  `Modal` mit einem React-Hook-Form/Zod-Formular (Kategorie-Auswahl folgt dem gewählten Typ,
+  clientseitige Validierung spiegelt die Backend-Invarianten: Betrag > 0, Datum nicht in der
+  Zukunft). Erfolgreiches Anlegen invalidiert den TanStack-Query-Cache, die Liste aktualisiert
+  sich automatisch.
+- Die übrigen 6 Seiten (Goals, Scenarios, Insurance, Reports, Settings, Admin) sind bewusst
+  transparente „Coming soon“-Platzhalter statt 404 – jeweils mit Hinweis, was am Backend schon
+  existiert.
 - `npm run build` und `npm run lint` laufen fehlerfrei; Dev-Server manuell gegen alle Routen
   geprüft (kein Backend/DB in dieser Umgebung verfügbar, daher keine echten Daten sichtbar –
   Lade-/Fehlerzustand wurde stattdessen verifiziert).
@@ -140,7 +146,7 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 | 5 | Spring Boot Backend | ✅ erledigt |
 | 6 | Financial Health Engine | ✅ erledigt (im Rahmen von Phase 5, Schritt 9) |
 | 7 | Scenario Engine | ✅ erledigt |
-| **8** | **Next.js Frontend (echte Seiten/Komponenten)** | **🟡 teilweise – Dashboard fertig, restliche Seiten offen** |
+| **8** | **Next.js Frontend (echte Seiten/Komponenten)** | **🟡 teilweise – Dashboard + Transactions fertig, 6 Seiten offen** |
 | 9 | Security (JWT, Rollen, Ownership-Checks) | offen |
 | 10 | JSON + XML Integration (inkl. Legacy-Adapter) | offen |
 | 11 | Testing-Strategie (Playwright/E2E, Coverage-Konzept) | offen |
@@ -160,5 +166,5 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 - OpenAPI/Swagger-Dokumentation der bisherigen Endpoints (Teil von Phase 5 laut Prompt, bisher
   ausgelassen).
 
-**Empfehlung:** weiter mit **Phase 8 – Transactions-Seite** (nächste Frontend-Slice: Liste +
-Formular zum Erfassen, API bereits vollständig vorhanden).
+**Empfehlung:** weiter mit **Phase 8 – Goals-Seite** (nächste Frontend-Slice: Liste + Formular
+zum Anlegen, API bereits vollständig vorhanden).
