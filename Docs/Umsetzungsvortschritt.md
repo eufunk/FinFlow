@@ -114,9 +114,20 @@ Seiten) begonnen:**
   clientseitige Validierung spiegelt die Backend-Invarianten: Betrag > 0, Datum nicht in der
   Zukunft). Erfolgreiches Anlegen invalidiert den TanStack-Query-Cache, die Liste aktualisiert
   sich automatisch.
-- Die übrigen 6 Seiten (Goals, Scenarios, Insurance, Reports, Settings, Admin) sind bewusst
-  transparente „Coming soon“-Platzhalter statt 404 – jeweils mit Hinweis, was am Backend schon
-  existiert.
+- **Goals-Seite vollständig fertig**: Kartenraster mit Fortschrittsbalken, „Erreicht“-Badge,
+  monatlicher Sparrate, erwarteter Rendite, Zieldatum und voraussichtlichem Erreichungsdatum
+  (bzw. „mit aktueller Sparrate nicht erreichbar“). „+ Neues Sparziel“ öffnet ein Formular
+  (React Hook Form/Zod), Rendite-Eingabe erfolgt nutzerfreundlich in Prozent und wird beim
+  Absenden in den vom Backend erwarteten Bruchteil umgerechnet.
+- **Scenarios-Seite vollständig fertig**: Kartenraster, jede Karte lädt ihr eigenes Ergebnis
+  (Mini-Chart, prognostiziertes Kapital, „Ziel erreicht“-Badge falls `targetCapital` gesetzt ist).
+  Checkbox „Vergleichen“ pro Karte; ab zwei ausgewählten Szenarien erscheint ein Vergleichsblock
+  mit einer neuen `ComparisonLineChart`-Komponente (mehrere Linien + Legende) sowie
+  Kennzahlen-Karten je Szenario (prognostiziertes Kapital, kaufkraftbereinigter Wert,
+  Zielerreichungsdatum). „+ Neues Szenario“ öffnet ein Formular; Rendite/Inflation werden wie bei
+  Goals nutzerfreundlich in Prozent eingegeben.
+- Die übrigen 4 Seiten (Insurance, Reports, Settings, Admin) sind bewusst transparente „Coming
+  soon“-Platzhalter statt 404 – jeweils mit Hinweis, was am Backend schon existiert.
 - `npm run build` und `npm run lint` laufen fehlerfrei; Dev-Server manuell gegen alle Routen
   geprüft (kein Backend/DB in dieser Umgebung verfügbar, daher keine echten Daten sichtbar –
   Lade-/Fehlerzustand wurde stattdessen verifiziert).
@@ -146,7 +157,7 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 | 5 | Spring Boot Backend | ✅ erledigt |
 | 6 | Financial Health Engine | ✅ erledigt (im Rahmen von Phase 5, Schritt 9) |
 | 7 | Scenario Engine | ✅ erledigt |
-| **8** | **Next.js Frontend (echte Seiten/Komponenten)** | **🟡 teilweise – Dashboard + Transactions fertig, 6 Seiten offen** |
+| **8** | **Next.js Frontend (echte Seiten/Komponenten)** | **🟡 teilweise – Dashboard, Transactions, Goals, Scenarios fertig, 4 Seiten offen** |
 | 9 | Security (JWT, Rollen, Ownership-Checks) | offen |
 | 10 | JSON + XML Integration (inkl. Legacy-Adapter) | offen |
 | 11 | Testing-Strategie (Playwright/E2E, Coverage-Konzept) | offen |
@@ -166,5 +177,7 @@ Reihenfolge gemäß der in Prompt 1/Abschlusskapitel festgelegten Roadmap:
 - OpenAPI/Swagger-Dokumentation der bisherigen Endpoints (Teil von Phase 5 laut Prompt, bisher
   ausgelassen).
 
-**Empfehlung:** weiter mit **Phase 8 – Goals-Seite** (nächste Frontend-Slice: Liste + Formular
-zum Anlegen, API bereits vollständig vorhanden).
+**Empfehlung:** weiter mit **Phase 8 – Settings-Seite** (Finanzprofil bearbeiten, API `GET`/
+`PUT /api/v1/profile` bereits vollständig vorhanden). Die verbleibenden Seiten Insurance, Reports
+und Admin brauchen erst zusätzliche Backend-Arbeit (eigene CRUD-Endpoints bzw. Security/Rollen aus
+Phase 9), bevor sie sinnvoll gebaut werden können.

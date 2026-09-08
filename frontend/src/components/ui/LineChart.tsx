@@ -38,7 +38,8 @@ export function LineChart({ points, height = 160 }: LineChartProps) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="none"
-        className="h-40 w-full"
+        className="w-full"
+        style={{ height }}
         role="img"
         aria-label="Vermögensentwicklung über die Laufzeit"
       >
